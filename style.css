@@ -46,7 +46,159 @@ html, body {
     font-weight: bold;
   }
   
-/* Style for the Settings Button */
+/* Navigation Bar Styles */
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  margin: 0 15px;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  width: auto;
+}
+
+.nav-button:hover {
+  color: #007BFF;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.nav-button.active {
+  color: #fff;
+  background-color: #007BFF;
+}
+
+.nav-settings {
+  background: none;
+  border: none;
+  margin: 5px;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  width: auto;
+}
+
+.nav-settings img {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.nav-settings img:hover {
+  transform: scale(1.1);
+}
+
+/* View Management */
+.view {
+  display: none;
+  width: 100%;
+}
+
+.active-view {
+  display: block;
+}
+
+/* History View Styles */
+#history-view {
+  padding: 0 20px;
+  text-align: center;
+  padding-left: 0px;
+}
+
+#history-view h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.history-container {
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+#history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.history-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.history-details {
+  text-align: left;
+}
+
+.history-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.history-date {
+  color: #777;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.history-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.history-actions button {
+  width: auto;
+  padding: 8px 15px;
+  margin: 0 5px;
+}
+
+.empty-history-message {
+  color: #888;
+  padding: 20px;
+  text-align: center;
+  font-style: italic;
+}
+
+.history-links a {
+  color: #007BFF;
+  text-decoration: none;
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+.history-links a:hover {
+  text-decoration: underline;
+}
+
 #open-settings {
   background: none; /* No default button background */
   border: none; /* Remove default border */
@@ -169,17 +321,6 @@ html, body {
   font-weight: normal !important;
   display: inline !important;
   margin: 0 !important;
-}
-
-background-color:rgb(61, 69, 119);
-  
-/* 🎡 Ensure `wheel-container` is positioned relative */
-#wheel-container {
-  position: relative;  /* ✅ This makes the GIF position relative to the wheel */
-  text-align: center;
-  width: 100%; /* ✅ Prevents overflow */
-  height: 310px; /* ✅ Matches wheel size */
-  overflow: hidden; /* ✅ Ensures GIF doesn't overflow */
 }
 
 /* 🔄 Loading GIF: Centered Inside the Wheel */
