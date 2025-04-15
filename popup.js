@@ -4,7 +4,7 @@ import { options, drawWheel, spin } from './wheel.js';
 const defaultSettings = {
   distance: 0.5,       // Default search radius in miles
   price: "2,3",        // Google Places API uses 1-4 ($ - $$$$)
-  dietary: "",         // Empty means no filter (future: vegetarian, gluten-free, etc.)
+  dietary: [],         // Array of dietary preferences (vegetarian, vegan, etc.)
 };
 // Convert miles to meters (Google Maps API uses meters)
 function milesToMeters(miles) {
@@ -30,7 +30,14 @@ async function fetchRestaurants() {
         const { latitude: lat, longitude: lng } = position.coords;
         const settings = await loadSettings();
   
-        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${milesToMeters(settings.distance)}&type=restaurant&keyword=healthy&minprice=${settings.price[0]}&maxprice=${settings.price[2]}&key=${ENV.GOOGLE_MAPS_API_KEY}`;
+        // Build keyword based on dietary preferences
+        let keyword = "healthy";
+        if (settings.dietary && settings.dietary.length > 0) {
+          settings.dietary.forEach(diet => {
+            keyword += " " + diet;
+          });
+
+        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${milesToMeters(settings.distance)}&type=restaurant&keyword=${keyword}&minprice=${settings.price[0]}&maxprice=${settings.price[2]}&key=${ENV.GOOGLE_MAPS_API_KEY}`;
   
         const response = await fetch(url);
         const data = await response.json();
@@ -142,13 +149,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("distance").value = settings.distance;
   document.getElementById("price").value = settings.price;
 
+  // Set dietary checkboxes based on saved preferences
+  if (settings.dietary && Array.isArray(settings.dietary)) {
+    settings.dietary.forEach(pref => {
+      const checkbox = document.getElementById(pref);
+      if (checkbox) checkbox.checked = true;
+    });
+  }
+
   // Save settings
   document.getElementById("save-settings").addEventListener("click", async () => {
     const distance = parseFloat(document.getElementById("distance").value);
     const price = document.getElementById("price").value;
   
+    // Get all checked dietary preferences
+    const dietaryCheckboxes = document.querySelectorAll('input[name="dietary"]:checked');
+    const dietary = Array.from(dietaryCheckboxes).map(cb => cb.value);
+  
     // Save the updated settings
-    chrome.storage.sync.set({ distance, price }, async () => {
+    chrome.storage.sync.set({ distance, price, dietary }, async () => {
       swal({
         title: `Settings saved!`,
         icon: "success",
