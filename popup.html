@@ -12,12 +12,21 @@
 
   <!-- 🏆 Personalized Greeting -->
   <div id="caption-box">
-    <h2 id="greeting">Time for a healthy meal 🥗!</h2>
+    <h3 id="greeting">Time for a healthy meal 🥗!</h3>
   </div>
   
   <div id="popup-container">
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <button id="nav-main" class="nav-button active">Home</button>
+      <button id="nav-history" class="nav-button">History</button>
+      <button id="open-settings" class="nav-settings">
+        <img src="assets/filter.jpg" alt="Settings">
+      </button>
+    </div>
+
     <!-- 🎡 Main View -->
-    <div id="main-view">
+    <div id="main-view" class="view active-view">
       <div id="wheel-container">
         <img id="loading-gif" src="assets/loading.gif" alt="Loading..." style="display: none;">
         <canvas id="wheel" width="310" height="310"></canvas>
@@ -25,13 +34,25 @@
       </div>
       <!-- 🏆 Selected Restaurant Result -->
       <div id="result-container" style="display: none;">
-        <p id="selected-restaurant"></p>
-        <a id="google-maps-link" href="#" target="_blank" style="display: none;">View on Google Maps</a>
+        <p id="selected-restaurant" style="font-size: 0px; display: none;"></p>
+        <a id="google-maps-link" href="#" target="_blank" style="font-size: 0px; display: none;">View on Google Maps</a>
       </div>
-      <!-- <button id="open-settings">Settings</button> -->
-      <button id="open-settings">
-        <img src="assets/filter.jpg" alt="Settings">
-      </button>
+    </div>
+
+    <!-- History View -->
+    <div id="history-view" class="view">
+      <h3>Your Lunch History</h3>
+      <div class="history-container">
+        <div id="history-list">
+          <!-- History items will be populated here dynamically -->
+          <div class="empty-history-message">
+            No history yet! Spin the wheel to start tracking your lunch choices.
+          </div>
+        </div>
+      </div>
+      <div class="history-actions">
+        <button id="clear-history">Clear History</button>
+      </div>
     </div>
 
     <!-- Settings View -->
@@ -70,7 +91,6 @@
         </div>
       </div>
       <button id="save-settings">Save</button>
-      <button id="close-settings">Back</button>
     </div>
   </div>
 

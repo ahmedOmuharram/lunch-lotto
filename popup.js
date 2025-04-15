@@ -6,6 +6,11 @@ const defaultSettings = {
   price: "2,3",        // Google Places API uses 1-4 ($ - $$$$)
   dietary: [],         // Array of dietary preferences (vegetarian, vegan, etc.)
 };
+
+const defaultHistory = {
+  visits: [] // Array of restaurant visits with date, name, etc.
+};
+
 // Convert miles to meters (Google Maps API uses meters)
 function milesToMeters(miles) {
   return miles * 1609.34;
@@ -18,6 +23,117 @@ async function loadSettings() {
       resolve(settings);
     });
   });
+}
+
+// Load lunch history or initialize empty
+async function loadHistory() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(defaultHistory, (data) => {
+      resolve(data.visits || []);
+    });
+  });
+}
+
+// Save a new restaurant visit to history
+async function saveToHistory(restaurant) {
+  const visits = await loadHistory();
+  
+  // Create new history entry
+  const newVisit = {
+    id: Date.now(), // Use timestamp as unique ID
+    name: restaurant.name,
+    date: new Date().toISOString(),
+    googleMapsLink: restaurant.googleMapsLink
+  };
+  
+  // Add to beginning of array (most recent first)
+  visits.unshift(newVisit);
+  
+  // Limit history to last 20 entries
+  const limitedVisits = visits.slice(0, 20);
+  
+  // Save back to storage
+  return new Promise((resolve) => {
+    chrome.storage.sync.set({ visits: limitedVisits }, () => {
+      resolve(limitedVisits);
+    });
+  });
+}
+
+// Clear all history
+async function clearHistory() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.set({ visits: [] }, () => {
+      resolve();
+    });
+  });
+}
+
+// Render history list in the UI
+async function renderHistory() {
+  const visits = await loadHistory();
+  const historyList = document.getElementById('history-list');
+  
+  // Clear existing history
+  historyList.innerHTML = '';
+  
+  if (visits.length === 0) {
+    // Show empty state
+    historyList.innerHTML = `
+      <div class="empty-history-message">
+        No history yet! Spin the wheel to start tracking your lunch choices.
+      </div>
+    `;
+    return;
+  }
+  
+  // Loop through visits and create history items
+  visits.forEach(visit => {
+    const date = new Date(visit.date);
+    const formattedDate = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    const historyItem = document.createElement('div');
+    historyItem.className = 'history-item';
+    historyItem.innerHTML = `
+      <div class="history-details">
+        <div class="history-name">${visit.name}</div>
+        <div class="history-date">${formattedDate}</div>
+      </div>
+      <div class="history-links">
+        <a href="${visit.googleMapsLink}" target="_blank">View on Maps</a>
+      </div>
+    `;
+    
+    historyList.appendChild(historyItem);
+  });
+}
+
+// Function to show a view and hide others
+function showView(viewId) {
+  // Hide all views
+  document.querySelectorAll('.view').forEach(view => {
+    view.classList.remove('active-view');
+  });
+  
+  // Show the requested view
+  document.getElementById(viewId).classList.add('active-view');
+  
+  // Update navigation buttons
+  document.querySelectorAll('.nav-button').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Highlight the active nav button
+  if (viewId === 'main-view') {
+    document.getElementById('nav-main').classList.add('active');
+    document.getElementById('main-view').style.display = 'block';
+    document.getElementById('history-view').style.display = 'none';
+  } else if (viewId === 'history-view') {
+    document.getElementById('nav-history').classList.add('active');
+    document.getElementById('main-view').style.display = 'none';
+    document.getElementById('history-view').style.display = 'block';
+    renderHistory(); // Refresh history when showing the view
+  }
 }
 
 async function fetchRestaurants() {
@@ -36,6 +152,7 @@ async function fetchRestaurants() {
           settings.dietary.forEach(diet => {
             keyword += " " + diet;
           });
+        }
 
         const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${milesToMeters(settings.distance)}&type=restaurant&keyword=${keyword}&minprice=${settings.price[0]}&maxprice=${settings.price[2]}&key=${ENV.GOOGLE_MAPS_API_KEY}`;
   
@@ -45,6 +162,8 @@ async function fetchRestaurants() {
         if (!data.results || data.results.length === 0) {
           console.error("❌ No restaurants found!");
           alert("No restaurants found! Try adjusting your settings.");
+          document.getElementById("loading-gif").style.display = "none"; // ✅ Hide loading GIF on error
+          document.getElementById("settings-view").style.display = "block";
           return;
         }
   
@@ -122,27 +241,86 @@ async function fetchRestaurants() {
 
 // 🛠️ Toggle Settings View
 function showSettings() {
-  document.getElementById("main-view").style.display = "none";
-  document.getElementById("settings-view").style.display = "block";
+  // First hide all other views
+  document.querySelectorAll('.view').forEach(view => {
+    if (view.id !== 'settings-view') {
+      view.style.display = 'none';
+    }
+  });
+  
+  // Then show the settings view
+  document.getElementById("settings-view").style.display = 'block';
+  
+  // Update navigation buttons
+  document.querySelectorAll('.nav-button').forEach(btn => {
+    btn.classList.remove('active');
+  });
 }
 
 function hideSettings() {
-  document.getElementById("main-view").style.display = "block";
-  document.getElementById("settings-view").style.display = "none";
+  // Hide settings view
+  document.getElementById("settings-view").style.display = 'none';
+  document.getElementById("nav-main").classList.add('active');
+  document.getElementById("nav-history").classList.remove('active');
+  document.getElementById("main-view").style.display = 'block';
+  document.getElementById("history-view").style.display = 'none';
+  
+  // Show main view
+  showView('main-view');
+}
+
+// Listen for restaurant selection to add to history
+function listenForSelection() {
+  // This uses a MutationObserver to watch for when the result-container is shown
+  const resultContainer = document.getElementById('result-container');
+  
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'style' && 
+          resultContainer.style.display !== 'none') {
+        
+        // Get selected restaurant
+        const selectedName = document.getElementById('selected-restaurant').textContent;
+        const mapsLink = document.getElementById('google-maps-link').href;
+        
+        if (selectedName && mapsLink) {
+          // Save to history
+          saveToHistory({
+            name: selectedName,
+            googleMapsLink: mapsLink
+          }).then(() => {
+            console.log("Added to history:", selectedName);
+          });
+        }
+      }
+    });
+  });
+  
+  observer.observe(resultContainer, { attributes: true });
 }
 
 // Ensure scripts run only after DOM is loaded
 document.addEventListener("DOMContentLoaded", async () => {
   await fetchRestaurants();
 
+  // Set up navigation
+  document.getElementById("nav-main").addEventListener("click", () => showView('main-view'));
+  document.getElementById("nav-history").addEventListener("click", () => showView('history-view'));
+  
   // Spin button event
   document.getElementById("spin").addEventListener("click", () => spin());
 
   // Open settings view
   document.getElementById("open-settings").addEventListener("click", showSettings);
 
-  // Close settings view
-  document.getElementById("close-settings").addEventListener("click", hideSettings);
+  
+  // Clear history button
+  document.getElementById("clear-history").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to clear your lunch history?")) {
+      await clearHistory();
+      renderHistory();
+    }
+  });
 
   // Load saved settings into inputs
   const settings = await loadSettings();
@@ -156,6 +334,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (checkbox) checkbox.checked = true;
     });
   }
+  
+  // Setup history tracking
+  listenForSelection();
 
   // Save settings
   document.getElementById("save-settings").addEventListener("click", async () => {

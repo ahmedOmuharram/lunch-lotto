@@ -11,6 +11,9 @@ let spinAngleStart = 0;
 let spinTime = 0;
 let spinTimeTotal = 0;
 
+// Create a custom event to notify of restaurant selection
+const selectionEvent = new Event('restaurantSelected');
+
 function scaleCanvas(canvas, ctx) {
     const pixelRatio = window.devicePixelRatio || 1;
   
@@ -54,6 +57,8 @@ function truncateOption(option) {
   }  
   
   function drawWheel() {
+    if (!canvas || !ctx) return; // Guard clause for when canvas is not ready
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
   
     // Set the font size and style
@@ -174,6 +179,9 @@ function truncateOption(option) {
       // Select a random motivational message
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
   
+      // Display the selection in the UI
+      displaySelectedRestaurant(selectedOption);
+      
       // Show result + motivational message
       swal({
         title: `Selected Option: ${selectedOption.name}`,
@@ -208,6 +216,28 @@ function truncateOption(option) {
     spinTimeout = setTimeout(rotateWheel, 30);
   }
 
+// Display the selected restaurant in the UI
+function displaySelectedRestaurant(selectedOption) {
+  const resultContainer = document.getElementById('result-container');
+  const selectedRestaurantText = document.getElementById('selected-restaurant');
+  const googleMapsLink = document.getElementById('google-maps-link');
+  
+  if (resultContainer && selectedRestaurantText && googleMapsLink) {
+    // Update the restaurant name text
+    selectedRestaurantText.textContent = selectedOption.name;
+    
+    // Update the Google Maps link
+    googleMapsLink.href = selectedOption.googleMapsLink;
+    googleMapsLink.style.display = 'inline-block';
+    
+    // Show the result container
+    resultContainer.style.display = 'block';
+    
+    // Dispatch custom event for history tracking
+    document.dispatchEvent(selectionEvent);
+  }
+}
+
 function finalizeWheel() {
   const degrees = (startAngle * 180) / Math.PI + 90; // Convert radians to degrees
   const index = Math.floor((360 - (degrees % 360)) / (360 / options.length)); // Calculate the selected segment
@@ -217,14 +247,25 @@ function finalizeWheel() {
 }
 
 function spin() {
+  // Hide any previous results
+  const resultContainer = document.getElementById('result-container');
+  if (resultContainer) {
+    resultContainer.style.display = 'none';
+  }
+  
   spinAngleStart = Math.random() * 10 + 10;
   spinTime = 0;
   spinTimeTotal = Math.random() * 3000 + 3000; // Spin duration between 3-6 seconds
   rotateWheel();
 }
 
-document.getElementById("spin").addEventListener("click", () => spin());
-scaleCanvas(canvas, ctx);
-drawWheel();
+// Initialize wheel when document is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // If canvas exists, initialize it
+  if (canvas) {
+    scaleCanvas(canvas, ctx);
+    drawWheel();
+  }
+});
 
 export { options, drawWheel, spin };
