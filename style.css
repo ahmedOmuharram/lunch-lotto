@@ -135,6 +135,42 @@ html, body {
   margin: 0 auto 20px;
 }
 
+/* Dietary options styling */
+.dietary-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 5px;
+  justify-content: center;
+}
+
+.dietary-option {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  padding: 5px 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.dietary-option:hover {
+  background-color: #e9f7ff;
+  transform: translateY(-2px);
+}
+
+.dietary-option input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.dietary-option label {
+  font-size: 12px !important;
+  cursor: pointer;
+  font-weight: normal !important;
+  display: inline !important;
+  margin: 0 !important;
+}
+
 background-color:rgb(61, 69, 119);
   
 /* 🎡 Ensure `wheel-container` is positioned relative */
