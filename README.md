@@ -1,86 +1,60 @@
 # **Lunch Lotto – Your Fun & Easy Lunch Picker!**  
 
-Welcome to **Lunch Lotto**, a Chrome extension designed to take the guesswork out of choosing what to eat for lunch! Whether you're indecisive or just looking to explore new healthy options, Lunch Lotto makes meal selection effortless and fun.  
+This is the Chrome enhancement assignment for **Lunch Lotto** (forked), a Chrome extension designed to take the guesswork out of choosing what to eat for lunch, for CIS 3500 at the University of Pennsylvania. Taught by Professor Jérémie O. Lumbroso.
 
 This project was created for the **2025 MCIT Hackathon**, with the goal of promoting healthier eating habits while simplifying the decision-making process.  
 
----  
+--- 
 
-## **Why Lunch Lotto?**  
-Are you tired of wasting time trying to figure out where to eat? Do you always end up going to the same places? Lunch Lotto helps by:  
-- Suggesting healthy restaurants near you  
-- Randomizing choices to introduce variety  
-- Providing instant access to restaurant details via Google Maps  
-- Making lunch decisions quick, fun, and stress-free!  
+## Implemented Features
 
----  
+### 1. Dietary Preference Filtering
 
-## **Key Features**  
+The dietary preference feature enhances the app by allowing users to filter restaurant recommendations based on specific dietary needs, making the lunch selection more personalized and inclusive.
 
-- 🎯 **Smart Recommendations** – Uses the **Google Maps API** to find nearby healthy restaurants based on your location, filtering by open status by default.  
-- 🎡 **Interactive Spin Wheel** – A fun and engaging way to randomly select a lunch spot, reducing decision fatigue and social pressure, perfect for individuals and group outings.  
-- ⚙️ **Customizable Preferences** – Personalize your search by adjusting filters such as distance and price range to suit your needs.  
-- 🌍 **Quick Google Maps Access** – Clickable restaurant links allow you to instantly view restaurant details, directions, and reviews.
-  
----  
+#### Key Components
+- **UI Selection**: Checkbox options for vegetarian, vegan, gluten-free, and halal preferences
+- **Search Integration**: Automatically includes selected dietary terms in the Google Places API query
+- **Persistent Settings**: User preferences are saved to Chrome storage for future sessions
+- **Visual Design**: Clean, modern styling with interactive hover effects for the options
 
-## **How It Works**  
+#### User Flow
+1. User accesses settings by clicking the filter icon
+2. Selects one or more dietary preferences from the checkboxes
+3. Saves settings, triggering a new restaurant search with updated criteria
+4. Wheel now contains restaurants matching the selected dietary preferences
 
-1. **Install the extension** from the Chrome Web Store (coming soon!).  
-2. **Click the extension icon** to open Lunch Lotto.  
-3. **Spin the wheel** to randomly pick a healthy lunch spot nearby.  
-4. **Click the result** to view it instantly on Google Maps.  
-5. **Customize settings** like distance and price range to refine your options.  
+#### Benefits
+- Makes the app more accessible to users with specific dietary requirements
+- Increases relevance of restaurant suggestions
+- Reduces the need to manually filter out unsuitable options
+- Improves overall user experience with personalized results
 
----  
+### 2. Lunch History Tracking
 
-## **Installation Guide**
+The history feature creates a timeline of past lunch selections, allowing users to track their dining patterns and easily revisit favorite spots.
 
-1. **Clone the repository:**  
-   ```bash
-   git clone https://github.com/jessie-sr/lunch-lotto.git
-   ```  
+#### Key Components
+- **Navigation Tab**: Dedicated history section accessible through the main navigation
+- **Timeline View**: Chronological list of restaurant selections with dates and times
+- **Direct Access**: Links to Google Maps for each historical restaurant
+- **Data Management**: Automatic saving of selections
+- **History Controls**: Option to clear history and start fresh
 
-2. **Replace the Google Maps API Key:**  
-   - Open the `popup.js` file in a code editor (e.g., VS Code).  
-   - Find the line containing:  
-     ```javascript
-     const apiKey = "YOUR_API_KEY";
-     ```
-   - Replace `"YOUR_API_KEY"` with your own **Google Maps API Key**.  
-     Example:  
-     ```javascript
-     const apiKey = "AIzaSy12345EXAMPLE";
-     ```
+#### User Flow
+1. User spins the wheel and selects a restaurant
+2. Selection is automatically saved to history with timestamp
+3. User can access history tab to view all past selections
+4. Each history entry displays restaurant name, date/time of selection
+5. User can click to view any past restaurant on Google Maps
 
-   - If you don’t have a Google Maps API Key yet, follow these steps:
-     1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-     2. Create or select a project.
-     3. Navigate to **APIs & Services > Credentials** and click **Create Credentials**.
-     4. Select **API Key**, copy the generated key, and replace the placeholder in `popup.js`.
+#### Benefits
+- Provides context about past dining choices
+- Eliminates the "Where did we go last time?" question
+- Makes it easy to return to restaurants previously discovered
+- Creates a fun record of lunch adventures over time
 
-3. **Open Chrome and navigate to:**  
-   ```text
-   chrome://extensions/
-   ```
-
-4. **Enable Developer Mode:**  
-   - Toggle the **Developer Mode** switch in the top-right corner.
-
-5. **Load the Extension:**  
-   - Click **"Load unpacked"** and select the project folder you just cloned.  
-
-6. **Start Using Lunch Lotto:**  
-   - The Lunch Lotto icon will appear in your Chrome toolbar.  
-   - Click the icon, spin the wheel, and let it decide your lunch spot!
-
-
----  
-
-## **Demo**  
-
-Watch our demo video to see Lunch Lotto in action:  
-[Hackathon 2025 - Lunch Lotto](https://youtu.be/i_liACGagPY)
+Both features enhance the Lunch Lotto extension by making it more personalized, functional, and user-friendly, transforming it from a simple random picker into a comprehensive lunch planning tool.
 
 ---  
 
