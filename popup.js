@@ -1,4 +1,5 @@
-const apiKey = "YOUR_API_KEY";
+import ENV from './env.js';
+
 const defaultSettings = {
   distance: 0.5,       // Default search radius in miles
   price: "2,3",        // Google Places API uses 1-4 ($ - $$$$)
@@ -28,7 +29,7 @@ async function fetchRestaurants() {
         const { latitude: lat, longitude: lng } = position.coords;
         const settings = await loadSettings();
   
-        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${milesToMeters(settings.distance)}&type=restaurant&keyword=healthy&minprice=${settings.price[0]}&maxprice=${settings.price[2]}&key=${apiKey}`;
+        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${milesToMeters(settings.distance)}&type=restaurant&keyword=healthy&minprice=${settings.price[0]}&maxprice=${settings.price[2]}&key=${ENV.GOOGLE_MAPS_API_KEY}`;
   
         const response = await fetch(url);
         const data = await response.json();
