@@ -2,7 +2,7 @@
 
 This is the Chrome enhancement assignment for **Lunch Lotto** (forked), a Chrome extension designed to take the guesswork out of choosing what to eat for lunch, for CIS 3500 at the University of Pennsylvania. Taught by Professor Jérémie O. Lumbroso.
 
-This project was created for the **2025 MCIT Hackathon**, with the goal of promoting healthier eating habits while simplifying the decision-making process.  
+This project was created for the **2025 MCIT Hackathon**, with the goal of promoting healthier eating habits while simplifying the decision-making process. All credit goes to original authors.
 
 --- 
 
