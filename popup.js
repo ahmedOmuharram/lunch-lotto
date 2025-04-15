@@ -1,4 +1,5 @@
 import ENV from './env.js';
+import { options, drawWheel, spin } from './wheel.js';
 
 const defaultSettings = {
   distance: 0.5,       // Default search radius in miles
@@ -62,13 +63,6 @@ async function fetchRestaurants() {
         });
   
         console.log("✅ Unique Restaurants fetched:", restaurants);
-  
-        // ✅ Store restaurant details globally
-        restaurantDetails = restaurants.reduce((acc, r) => {
-          acc[r.name] = r;
-          return acc;
-        }, {});
-  
         // ⏳ Wait 5 seconds before showing the wheel
         setTimeout(() => {
           document.getElementById("loading-gif").style.display = "none"; // ✅ Hide Loading GIF
@@ -108,7 +102,7 @@ async function fetchRestaurants() {
     console.log("✅ Options for the Wheel:", options);
   
     // Store full restaurant details, including names and links
-    restaurantDetails = selectedRestaurants.map((restaurant) => ({
+    const restaurantDetails = selectedRestaurants.map((restaurant) => ({
       name: restaurant.name,
       googleMapsLink: restaurant.googleMapsLink // Add the Google Maps link
     }));
